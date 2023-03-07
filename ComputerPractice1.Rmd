@@ -1,0 +1,112 @@
+---
+title: "Data Vizualization in R"
+subtitle: "Tutorial 1"
+## date: "17/08/2022"
+
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+    seal: false
+    nature:
+      ratio: '16:9'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: left, middle
+####Computer Practice 1
+
+##Single cell Transcriptomics using R
+##From counts to clusters
+####Victoria Mironova 
+####Associate Professor, Department of Plant Systems Physiology
+<img src="figs/Theme2.png" width="100px" align = 'right'>
+
+---
+```{r include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.retina = 3)
+set.seed(100)
+```
+
+.pull-left[
+#Course structure
+]
+---
+# The dataset
+
+In the computer practice, we will use the single-cell dataset from Arabidopsis leaf:
+.pull-left[
+*Lopez-Anido CB, Vatén A, Smoot NK, Sharma N et al. Single-cell resolution of lineage trajectories in the Arabidopsis stomatal lineage and developing leaf. Dev Cell 2021 Apr 5;56(7):1043-1055.e4.*
+]
+.pull-right[
+```{r Ara leaf, echo=FALSE, fig.cap="Graphical summary from (Lopez et al., 2021)", out.width = '80%'}
+knitr::include_graphics("Figures/LeafTranscriptome.jpg")
+```
+]
+---
+#Installing packages, loading libraries
+```{r libraries, message = FALSE}
+library(Seurat)
+```
+
+---
+# Data download
+
+The data is stored on GEO database: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE167135
+We used only sample GSM509788 (ATML1p 10X Genomics pool 1) 
+
+you can download tar archive yourself, or take the file from us.
+
+?10xGenomics, maybe I need to give only mtx
+
+---
+# Step 1. Data loading into R
+
+With 10xGenomics datasets you can use `Read10x` function to load the data.
+
+```{r pressure}
+#add the path to the folder with the matric here:
+path <- "E:/R_images/Leaf_LopezAnido_DevCell/Data/GSM5097888_Leaf-HVYNNBBXX/filtered_gene_bc_matrices/Arabidopsis/" 
+leaf.data<-Read10X(path, gene.column = 1)
+```
+--
+```{r raw matrix}
+head(leaf.data)
+dim(leaf.data)
+```
+
+--
+There are 31110 genes and 5021 cells in the dataset
+
+---
+# Step 2.0. Making Seurat object
+
+```{r seurat object}
+leaf.dataset <- CreateSeuratObject(counts = leaf.data, project = "leaf")
+```
+--
+```{r in seurat object}
+head(leaf.dataset)
+```
+this will require to elaborate on more
+---
+# Step 2.1. Filter out bad quality cells
+
+```{r mt and ct}
+leaf.dataset[["percent.mt"]] <- PercentageFeatureSet(leaf.dataset, pattern = "^ATM")
+leaf.dataset[["percent.ct"]] <- PercentageFeatureSet(leaf.dataset, pattern = "^ATC")
+```
+The `[[` operator can add columns to the object metadata. 
+Check the Seurat object meta.data: we've got additional variable percent.mt and percent.ct in there calculated for all the cells.
+
+--
+
+```{r filter cells}
+leaf.dataset <- subset(leaf.dataset, subset = percent.mt <= 25 & percent.ct <= 25 & nCount_RNA >=500)
+dim(leaf.dataset)
+```
+
+Nothing changed, either because the data was of a good quality or because they already excluded bad cells
+
+```
+
