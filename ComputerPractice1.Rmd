@@ -50,6 +50,8 @@ First we will need to install packages and load the libraries into your environm
 ```{r libraries, message = FALSE}
 library(Seurat)
 library(ggplot2)
+
+set.seed(42)
 ```
 
 ---
