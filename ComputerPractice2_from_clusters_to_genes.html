@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>scTrancriptomics in plants</title>
+    <meta charset="utf-8" />
+    <script src="ComputerPractice2_from_clusters_to_genes_files/header-attrs-2.19/header-attrs.js"></script>
+    <link href="ComputerPractice2_from_clusters_to_genes_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="ComputerPractice2_from_clusters_to_genes_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="ComputerPractice2_from_clusters_to_genes_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: left, middle
+####Computer Practice 2
+
+##Single cell Transcriptomics using R
+##Seurat: from clusters to marker genes
+####Victoria Mironova 
+####Associate Professor, Department of Plant Systems Physiology
+&lt;img src="Figures/Theme2.png" width="100px" align = 'right'&gt;
+
+---
+class: middle, inverse
+
+
+.pull-left[
+#Course structure
+
+- C1. From reads to counts
+- C2. From counts to clusters
+- *C3. From clusters to marker genes*
+- C4. Developmental trajectories, developmental states.
+
+The course materials can be found via [GitHub](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants)
+
+
+
+]
+---
+#What we managed doing yesterday
+
+.pull-left[
+
+```r
+DimPlot(leaf.dataset, label = TRUE, pt.size = 1.5, label.size = 10) + NoLegend()
+```
+
+&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/DimPLot-1.png" width="504" /&gt;
+]
+.pull-right[
+
+```r
+DoHeatmap(leaf.dataset, features = marker_genes) + NoLegend()
+```
+
+&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/featureplot1-1.png" width="504" /&gt;
+]
+---
+#The issue we faced
+It often happens that we cannot annotate all the clusters
+
+.pull-left[
+&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/DimPLot1-1.png" width="504" /&gt;
+]
+.pull-right[
+&lt;div class="figure"&gt;
+&lt;img src="Figures/ScLeaf.jpg" alt="Graphical summary from (Lopez et al., 2021)" width="80%" /&gt;
+&lt;p class="caption"&gt;Graphical summary from (Lopez et al., 2021)&lt;/p&gt;
+&lt;/div&gt;
+]
+---
+class: middle, inverse
+
+#Task 1: Adjusting the number of clusters
+
+---
+#Reprocessing the data to adjust the number of clusters
+Lets rerun the whole processing pipeline till FindClusters function:
+
+```r
+path &lt;- "Data/GSM5097888"
+leaf.dataset&lt;-Read10X(path, gene.column = 1)
+leaf.dataset &lt;- CreateSeuratObject(counts = leaf.dataset, project = "leaf")
+leaf.dataset[["percent.mt"]] &lt;- PercentageFeatureSet(leaf.dataset, pattern = "^ATM")
+leaf.dataset[["percent.ct"]] &lt;- PercentageFeatureSet(leaf.dataset, pattern = "^ATC")
+leaf.dataset &lt;- subset(leaf.dataset, subset = percent.mt &lt;= 20 &amp; percent.ct &lt;= 20 &amp; nCount_RNA &gt;=1000)
+leaf.dataset &lt;- SCTransform(leaf.dataset)
+leaf.dataset &lt;- RunPCA(leaf.dataset,verbose = FALSE)
+leaf.dataset &lt;- RunUMAP(leaf.dataset, dims = 1:50, verbose = FALSE)
+leaf.dataset &lt;- FindNeighbors(leaf.dataset, dims = 1:50, verbose = FALSE)
+```
+---
+#Adjusting the clusters number: resolution 1
+.pull-left[
+
+```r
+leaf.dataset_res1 &lt;- FindClusters(leaf.dataset, 
+                                  resolution = 1, 
+                                  verbose = FALSE)
+DimPlot(leaf.dataset_res1, 
+        label = TRUE, 
+        pt.size = 1.5, 
+        label.size = 10) + 
+        NoLegend() 
+```
+]
+.pull-right[
+&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/clusters adjust res 1 out-1.png" width="504" /&gt;
+]
+---
+#Making less clusters: resolution 0.2
+.pull-left[
+
+```r
+leaf.dataset_res0.2 &lt;- FindClusters(leaf.dataset, 
+                                  resolution = 0.2, 
+                                  verbose = FALSE)
+DimPlot(leaf.dataset_res0.2, 
+        label = TRUE, 
+        pt.size = 1.5, 
+        label.size = 10) + 
+        NoLegend() 
+```
+]
+.pull-right[
+&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/clusters adjust res 0.2 out-1.png" width="504" /&gt;
+]
+---
+#Making more clusters: resolution 1.5
+.pull-left[
+
+```r
+leaf.dataset_res1.5 &lt;- FindClusters(leaf.dataset, 
+                                  resolution = 1.5, 
+                                  verbose = FALSE)
+DimPlot(leaf.dataset_res1.5, 
+        label = TRUE, 
+        pt.size = 1.5, 
+        label.size = 10) + 
+        NoLegend() 
+```
+]
+.pull-right[
+&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/clusters adjust res 1.5 out-1.png" width="504" /&gt;
+]
+---
+class: middle, inverse
+
+#Task 2: Finding marker genes
+---
+#Finding markers for all the clusters
+
+
+```r
+leaf0.2.markers &lt;- FindAllMarkers(leaf.dataset_res0.2, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+```
+
+!That is time-consuming step so I advice to save it upon creation and work with the saved version further on:
+
+```r
+write.csv(leaf0.2.markers, file = "Data/leaf_res0.2_markers.csv")
+```
+
+
+
+---
+#Vizualizing the markers: table
+
+```r
+leaf0.2.markers %&gt;% 
+    group_by(cluster) %&gt;%
+    slice_max(n = 2, order_by = avg_log2FC)
+```
+
+```
+## # A tibble: 14 x 8
+## # Groups:   cluster [7]
+##    X              p_val avg_log2FC pct.1 pct.2 p_val_adj cluster gene     
+##    &lt;chr&gt;          &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;int&gt; &lt;chr&gt;    
+##  1 AT5G38410  0               5.09 0.983 0.462 0               0 AT5G38410
+##  2 AT1G29910  0               4.79 0.942 0.213 0               0 AT1G29910
+##  3 AT5G26000  0               5.42 0.957 0.118 0               1 AT5G26000
+##  4 AT1G04800  0               4.39 0.845 0.061 0               1 AT1G04800
+##  5 AT2G05380  2.74e-207       3.10 0.574 0.166 5.31e-203       2 AT2G05380
+##  6 AT5G55180  0               2.65 0.837 0.243 0               2 AT5G55180
+##  7 AT3G11930  2.91e-228       3.35 0.403 0.047 5.62e-224       3 AT3G11930
+##  8 AT2G02100  1.04e-286       3.22 0.727 0.2   2.02e-282       3 AT2G02100
+##  9 AT5G59690  6.40e-164       4.60 1     0.26  1.24e-159       4 AT5G59690
+## 10 AT5G10400  0               3.99 0.988 0.035 0               4 AT5G10400
+## 11 AT1G118501 4.53e-136       4.01 0.983 0.086 8.75e-132       5 AT1G11850
+## 12 AT1G04110  0               3.33 0.915 0.004 0               5 AT1G04110
+## 13 AT4G23670  2.10e-111       4.96 1     0.085 4.06e-107       6 AT4G23670
+## 14 AT2G385402 2.16e- 46       4.11 1     0.254 4.18e- 42       6 AT2G38540
+```
+---
+#Vizualizing the markers: DoHeatmap
+
+.pull-left[
+
+```r
+top2&lt;-leaf0.2.markers %&gt;% 
+    group_by(cluster) %&gt;%
+    slice_max(n = 2, order_by = avg_log2FC)
+DoHeatmap(leaf.dataset_res0.2, 
+          features = top2$gene) + 
+          NoLegend()
+```
+]
+.pull-right[
+&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/top2 markers heatmap out-1.png" width="504" /&gt;
+]
+---
+class: Center, inverse
+
+#Your turn
+
+- Make a new seurat object with the FindClusters resolution = 0.1
+- Make a list of TOP5 marker genes 
+- Build a heatmap for TOP5 marker genes
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
