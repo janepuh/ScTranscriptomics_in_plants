@@ -195,7 +195,7 @@ DoHeatmap(leaf.dataset_res0.2,
 ```
 ]
 ---
-class: Center, inverse
+class: middle, inverse
 
 #Your turn
 
