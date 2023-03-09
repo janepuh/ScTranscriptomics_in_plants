@@ -1,0 +1,42 @@
+---
+title: "scTrancriptomics in plants"
+subtitle: "Tutorial 2"
+## date: "24/04/2023"
+
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+    seal: false
+    nature:
+      ratio: '16:9'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: left, middle
+####Computer Practice 2
+
+##Single cell Transcriptomics using R
+##Seurat: from clusters to marker genes
+####Victoria Mironova 
+####Associate Professor, Department of Plant Systems Physiology
+<img src="Figures/Theme2.png" width="100px" align = 'right'>
+
+---
+```{r include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.retina = 3)
+set.seed(100)
+```
+
+.pull-left[
+#Course structure
+
+- C1. From reads to counts
+- C2. From counts to clusters
+- *C3. From clusters to marker genes*
+- C4. Developmental trajectories, developmental states.
+
+The course materials can be found via [GitHub](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants)
+
+]
+---
