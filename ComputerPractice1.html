@@ -1230,8 +1230,37 @@ leaf.dataset &lt;- FindClusters(leaf.dataset, resolution = 1,verbose = FALSE)
 ```
 
 
+---
+#Step 4. Explore the cell clusters
+
+How many cells are in each cluster?
+
 ```r
-leaf.dataset &lt;- readRDS('Data/leaf.dataset.rds')
+table(Idents(leaf.dataset))
+```
+
+```
+## 
+##   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 
+## 803 732 399 376 321 305 292 264 235 228 211 166 155 111 103  91  77  64  46  42
+```
+--
+What proportion of cells are in each cluster?
+
+```r
+prop.table(table(Idents(leaf.dataset)))
+```
+
+```
+## 
+##           0           1           2           3           4           5 
+## 0.159928301 0.145787692 0.079466242 0.074885481 0.063931488 0.060744872 
+##           6           7           8           9          10          11 
+## 0.058155746 0.052579167 0.046803426 0.045409281 0.042023501 0.033061143 
+##          12          13          14          15          16          17 
+## 0.030870345 0.022107150 0.020513842 0.018123880 0.015335591 0.012746465 
+##          18          19 
+## 0.009161522 0.008364868
 ```
 ---
 #Step 4. Data clustering and visualization
