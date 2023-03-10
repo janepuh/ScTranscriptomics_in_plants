@@ -1,0 +1,35 @@
+class: left, middle
+####Computer Practice 4
+
+##Single cell Transcriptomics using R
+##Developmental trajectories, developmental states.
+####Victoria Mironova 
+####Associate Professor, Department of Plant Systems Physiology
+<img src="Figures/Theme2.png" width="100px" align = 'right'>
+
+---
+class: middle, inverse
+```{r include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.retina = 3)
+set.seed(100)
+```
+
+.pull-left[
+#Course structure
+
+- C1. From reads to counts
+- C2. From counts to clusters
+- C3. From clusters to marker genes
+- *C4. Developmental trajectories, developmental states*
+
+The course materials can be found via [GitHub](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants)
+
+
+```{r libraries,  echo = FALSE}
+library(Seurat)
+library(ggplot2)
+library(tidyverse)
+leaf.dataset<-readRDS('Data/leaf.dataset.rds')
+```
+---
+
