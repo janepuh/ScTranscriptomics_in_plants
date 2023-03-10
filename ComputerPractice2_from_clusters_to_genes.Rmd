@@ -153,7 +153,7 @@ DimPlot(leaf.dataset_res1.5,
 ---
 class: middle, inverse
 
-#Task 2: Finding marker genes
+#Task 2: Finding all marker genes
 ---
 #Finding markers for all the clusters
 
@@ -195,10 +195,85 @@ DoHeatmap(leaf.dataset_res0.2,
 ```
 ]
 ---
+#Vizualizing the markers: violine plot
+
+```{r Vln for markers, fig.width = 16}
+VlnPlot(leaf.dataset_res0.2, features = top2$gene, pt.size = 0.2, ncol = 7)
+```
+
+---
+#Vizualizing the markers: dot plot
+```{r doc plot}
+DotPlot(leaf.dataset_res0.2, features = top2$gene, cols = c("blue", "red"), dot.scale = 8) +
+    RotatedAxis()
+```
+
+---
+class: middle, inverse
+
+#Task 3: Finding marker genes for specific clusters
+---
+#What is different between two close clusters?
+
+.pull-left[
+```{r clusters adjust res 1 out2, echo = FALSE, eval = TRUE, ref.label='clusters adjust res 1'}
+```
+]
+
+.pull-right[
+Here is a DimPlot with 19 clusters detected under resolution = 1.</br>
+
+We already noticed that clusters 1 and 2 are very similar in terms of the gene expression.</br>
+
+But what is the difference?
+
+Lets find it.
+]
+
+---
+#Differentially expressed genes between two clusters
+
+```{r find markers between two clusters}
+cluster2.markers <- FindMarkers(leaf.dataset_res1, ident.1 = 2, ident.2 = 1, min.pct = 0.25)
+head(cluster2.markers, n = 8)
+```
+--
+
+- p_val : p_val (unadjusted)
+- avg_log2FC : log fold-change of the average expression between the two groups. Positive values indicate that the feature is more highly expressed in the first group.
+- pct.1 : The percentage of cells where the feature is detected in the first group
+- pct.2 : The percentage of cells where the feature is detected in the second group
+- p_val_adj : Adjusted p-value, based on Bonferroni correction using all features in the dataset.
+
+
+---
+#Differentially expressed genes between two clusters
+```{r Vln for markers 2 clusters, fig.width = 16}
+top10 <- cluster2.markers %>% slice_max(n = 10, order_by = avg_log2FC) %>% row.names()
+VlnPlot(leaf.dataset_res1, features = top10, pt.size = 0.2, ncol = 5)
+```
+The data suggests that there is no any specifically expressed gene between two clusters, they all express in both cell populations, but with different expression levels. 
+---
+#Other solutions for markers genes
+
+Differentially expressed genes between a set of clusters:
+```{r markers 3 clusters, eval = FALSE}
+FindMarkers(leaf.dataset_res1, ident.1 = 2, ident.2 = c(1,6), min.pct = 0.25)
+```
+
+Seurat has several tests for differential expression which can be set with the test.use parameter.
+
+```{r markers stat, eval = FALSE}
+FindMarkers(leaf.dataset_res1, ident.1 = 2, ident.2 = c(1,6), min.pct = 0.25, test.use = "roc")
+```
+For example, the ROC test returns the ‘classification power’ for any individual marker (ranging from 0 - random, to 1 - perfect).
+Among other alternatives: “wilcox”, “bimod”, “roc”, “t”, “poisson”, “negbinom”, “LR”, “MAST”, “DESeq2”. 
+
+---
 class: middle, inverse
 
 #Your turn
 
 - Make a new seurat object with the FindClusters resolution = 0.1
 - Make a list of TOP5 marker genes 
-- Build a heatmap for TOP5 marker genes
+- Build a heatmap, dotplot, and violine plot for TOP5 marker genes

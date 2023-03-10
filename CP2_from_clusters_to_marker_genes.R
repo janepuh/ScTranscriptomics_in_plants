@@ -48,4 +48,20 @@ top2<-leaf0.2.markers %>%
 
 DoHeatmap(leaf.dataset_res0.2, features = top2$gene) + NoLegend()
 
+VlnPlot(leaf.dataset_res0.2, features = top2$gene, pt.size = 0.2, ncol = 7)
+
+#Differential expressed genes between two clusters
+
+cluster2.markers <- FindMarkers(leaf.dataset_res1, ident.1 = 2, ident.2 = 1, min.pct = 0.25)
+head(cluster2.markers, n = 8)
+
+top10 <- cluster2.markers %>% 
+            slice_max(n = 10, order_by = avg_log2FC) %>% 
+            row.names()
+VlnPlot(leaf.dataset_res1, features = top10, pt.size = 0.2, ncol = 5)
+
+
 #Task 1:Build a heatmap for TOP5 marker genes
+
+
+
