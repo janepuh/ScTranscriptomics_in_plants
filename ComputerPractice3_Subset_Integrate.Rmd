@@ -1,0 +1,163 @@
+---
+title: "scTrancriptomics in plants"
+subtitle: "Tutorial 3"
+## date: "24/04/2023"
+
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+    seal: false
+    nature:
+      ratio: '16:9'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: left, middle
+####Computer Practice 4
+
+##Single cell Transcriptomics using R
+##Seurat: subsetting and integrating the data
+####Victoria Mironova 
+####Associate Professor, Department of Plant Systems Physiology
+<img src="Figures/Theme2.png" width="100px" align = 'right'>
+
+---
+class: middle, inverse
+```{r include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.retina = 3)
+set.seed(100)
+```
+
+#Course structure
+
+- C1. From reads to counts
+- C2. From counts to clusters
+- C3. From clusters to marker genes
+- *C4. Subsetting and integrating the data*
+- C5. Developmental trajectories, developmental states.
+
+The course materials can be found via [GitHub](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants)
+
+
+```{r libraries,  echo = FALSE}
+library(Seurat)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+```
+---
+#The data: scRNA-Seq from leaves
+
+In the computer practice, we are using the single-cell dataset from Arabidopsis leaf:
+.pull-left[
+*Lopez-Anido CB, Vatén A, Smoot NK, Sharma N et al. Single-cell resolution of lineage trajectories in the Arabidopsis stomatal lineage and developing leaf. Dev Cell 2021 Apr 5;56(7):1043-1055.e4.*
+]
+.pull-right[
+```{r Ara leaf, echo=FALSE, fig.cap="Graphical summary from (Lopez et al., 2021)", out.width = '80%'}
+knitr::include_graphics("Figures/ScLeaf.jpg")
+```
+]
+---
+#Step 0. Data download
+
+The data is stored on GEO database: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE167135
+Today we will use all 10xGenomics samples:
+- GSM509788 (ATML1p 10X Genomics replica 3).
+- GSM509789 (TMMp 10X Genomics replica 1),
+- GSM509790 (TMMp 10X Genomics replica 2),
+- GSM509791 (TMMp 10X Genomics replica 3).
+
+You can start from the scratch, downloading *.tar* archive yourself and finding the data matrix there.</br>
+Or you can use the data we already downloaded and stored for you in [Google Drive](https://drive.google.com/drive/folders/1tkcZoZwSmunHVbSHgNEwQcWKOERQ7anI?usp=share_link).
+
+---
+# Step 1. Data loading into R
+
+Yesterday, we have already created Seurat Object leaf.dataset and saved it as .rds file. Lets reuse it.
+
+```{r ATML1 seurat object}
+leaf.dataset<-readRDS('Data/leaf.dataset.rds')
+show(leaf.dataset)
+```
+---
+# Step 2. Exploring Seurat object
+
+```{r table Seurat, echo = FALSE}
+df <- data.frame(slot = c('assays', 'meta.data', 'active.assay', 'active.ident', 'graphs', 'reductions', 'project.name', 'tools', 'misc', 'version'),
+                 description = c("A list of assays within this object", "Cell-level meta data", "Name of active, or default, assay", "Identity classes for the current object", "A list of nearest neighbor graphs", "A list of DimReduc objects", "User-defined project name (optional)", "Empty list. Tool developers can store any internal data from their methods here", "Empty slot. User can store additional information here", "Seurat version used when creating the object"))
+knitr::kable(df, caption = "Seurat object structure.")
+```
+---
+#Step 2. Looking at the Seurat object structure
+```{r seurat object 1}
+str(leaf.dataset)
+```
+---
+# Step 2. Exploring Seurat object
+
+```{r seurat object 2}
+show(leaf.dataset)
+show(leaf.dataset@assays)
+```
+---
+# Step 2. Exploring Seurat object
+
+```{r seurat object 3}
+show(leaf.dataset@assays$RNA@counts)
+```
+---
+# Step 2. Exploring Seurat object
+
+```{r seurat object 4}
+head(leaf.dataset@assays$RNA@counts@Dimnames[1])
+```
+---
+# Step 2. Exploring Seurat object
+
+```{r seurat object 5}
+head(leaf.dataset@meta.data)
+```
+
+```{r seurat object 6}
+head(leaf.dataset@meta.data$percent.mt)
+```
+---
+#Step 2.1. Getting data out of Seurat Object
+.pull-left[
+```{r seurat object 7}
+head(leaf.dataset@meta.data$percent.mt)
+```
+]
+.pull-right[
+```{r seurat object 8}
+hist(leaf.dataset@meta.data$percent.mt)
+```
+]
+---
+#Step 2.2. Adding data into Seurat Object
+```{r add seurat object}
+MetaData <- as.data.frame(leaf.dataset@meta.data)
+Status <- MetaData %>% 
+        mutate(Status = case_when(
+          nFeature_RNA <= 1500 ~ "old",
+          (nFeature_RNA > 1500 & nFeature_RNA < 3000)  ~ "adult",
+          nFeature_RNA >= 3000 ~ "young")) %>%
+        select(Status)
+head(Status)
+```
+
+---
+#Step 2.2. Adding data into Seurat Object
+```{r add seurat object 3}
+leaf.dataset <- AddMetaData(
+  object = leaf.dataset,
+  metadata = data.frame(Status),
+  col.name = "Status")
+```
+--
+```{r add seurat object 4}
+head(leaf.dataset@meta.data)
+```
+
