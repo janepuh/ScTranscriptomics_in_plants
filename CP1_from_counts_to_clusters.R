@@ -23,6 +23,9 @@ dim(leaf.data)
 #Step 2. Making Seurat object
 leaf.dataset <- CreateSeuratObject(counts = leaf.data, project = "leaf")
 
+head(leaf.dataset)
+dim(leaf.dataset)
+
 #Step 2.1. Testing the dataset quality
 FeatureScatter(leaf.dataset, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
 
@@ -52,7 +55,6 @@ DimPlot(leaf.dataset, label = TRUE, pt.size = 1.5, label.size = 10) + NoLegend()
 saveRDS(leaf.dataset,'Data/leaf.dataset.rds')
 
 leaf.dataset <- readRDS('Data/leaf.dataset.rds')
-
 
 #Step 6. Gene expression vizualization
 
