@@ -14605,7 +14605,63 @@ head(leaf.dataset@meta.data)
 ## AAACCTGTCCTAAGTG-1       4128         1552            18              18  adult
 ## AAACCTGTCTAGAGTC-1       4377         1869            15              15  adult
 ```
+---
+#Step 2.3. Methods you can apply to Seurat
 
+
+```r
+utils::methods(class = 'Seurat')
+```
+
+```
+##  [1] $                             $&lt;-                          
+##  [3] [                             [[                           
+##  [5] [[&lt;-                          AddMetaData                  
+##  [7] as.CellDataSet                as.SingleCellExperiment      
+##  [9] colMeans                      colSums                      
+## [11] Command                       DefaultAssay                 
+## [13] DefaultAssay&lt;-                DefaultFOV                   
+## [15] DefaultFOV&lt;-                  dim                          
+## [17] dimnames                      droplevels                   
+## [19] Embeddings                    FetchData                    
+## [21] FindClusters                  FindMarkers                  
+## [23] FindNeighbors                 FindSpatiallyVariableFeatures
+## [25] FindVariableFeatures          FoldChange                   
+## [27] GetAssay                      GetAssayData                 
+## [29] GetImage                      GetTissueCoordinates         
+## [31] head                          HVFInfo                      
+## [33] Idents                        Idents&lt;-                     
+## [35] Key                           Keys                         
+## [37] levels                        levels&lt;-                     
+## [39] Loadings                      merge                        
+## [41] Misc                          Misc&lt;-                       
+## [43] names                         NormalizeData                
+## [45] Project                       Project&lt;-                    
+## [47] ProjectUMAP                   RenameCells                  
+## [49] RenameIdents                  ReorderIdent                 
+## [51] rowMeans                      rowSums                      
+## [53] RunCCA                        RunICA                       
+## [55] RunLDA                        RunPCA                       
+## [57] RunSLSI                       RunSPCA                      
+## [59] RunTSNE                       RunUMAP                      
+## [61] ScaleData                     ScoreJackStraw               
+## [63] SCTResults                    SetAssayData                 
+## [65] SetIdent                      show                         
+## [67] SpatiallyVariableFeatures     StashIdent                   
+## [69] Stdev                         subset                       
+## [71] SVFInfo                       tail                         
+## [73] Tool                          Tool&lt;-                       
+## [75] VariableFeatures              VariableFeatures&lt;-           
+## [77] Version                       WhichCells                   
+## see '?methods' for accessing help and source code
+```
+---
+#Step 3. Subset Seurat Object
+
+
+```r
+?SeuratObject::subset
+```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

@@ -160,4 +160,15 @@ leaf.dataset <- AddMetaData(
 ```{r add seurat object 4}
 head(leaf.dataset@meta.data)
 ```
+---
+#Step 2.3. Methods you can apply to Seurat
 
+```{r add seurat object 5}
+utils::methods(class = 'Seurat')
+```
+---
+#Step 3. Subset Seurat Object
+
+```{r add seurat object 6}
+?SeuratObject::subset
+```
