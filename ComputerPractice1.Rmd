@@ -35,28 +35,14 @@ set.seed(100)
 - C1. From reads to counts
 - C2. From counts to clusters
 - C3. From clusters to marker genes
-- C4. Developmental trajectories, developmental states.
+- C4. Subsetting and integrating the data.
+- C5. Developmental trajectories, developmental states.
 
 The course materials can be found via [GitHub](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants)
 
 ]
 ---
-#Step 0. Preparatory: install packages
-
-First we will need to install packages and load the libraries into your environmen. </br>
-1. Use the file `_packages.R` from [GitHub](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants) to install the packages needed in a course.</br>
-
-2. Then load the libraries. Today we need only Seurat and ggplot2 packages:
-
-```{r libraries, message = FALSE}
-library(Seurat)
-library(ggplot2)
-
-set.seed(42)
-```
-
----
-#Step 0. Preparatory: data download
+#Step 0. Data download
 
 In the computer practice, we will use the single-cell dataset from Arabidopsis leaf:
 .pull-left[
@@ -74,7 +60,41 @@ The data is stored on GEO database: https://www.ncbi.nlm.nih.gov/geo/query/acc.c
 We will use only the sample GSM509788 (ATML1p 10X Genomics pool 1). </br>
 
 You can start from the scratch, downloading *.tar* archive yourself and finding the data matrix there.</br>
-Or you can use the data we already downloaded and stored for you in `Data/GSM5097888`.
+Or you can use the data we already downloaded [via this link](https://drive.google.com/drive/folders/11hHUQ3nabTj230urqKnTXPCwoqWhZ8Zc?usp=sharing).
+
+---
+#Step 0. Course material download
+
+Preparatory steps:
+1. You need to clone/download [GitHub repo](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants) with all the course materials (including this lecture).
+2.  Inside the resulting folder, create a folder `Data/GSM5097888` and save the counts data in there.
+3. open `ScTranscriptomics_inPlants.Rproj ` project </br>
+
+
+---
+#Step 0. Preparatory: install packages
+
+First we will need to install packages and load the libraries into your environment. </br>
+
+1. You can use the file `_packages.R` to install all the packages needed in a course.</br>
+
+2. open the script `CP1_from_counts_to_clusters.R` for today's practice.
+
+3. Load the libraries using the script. Today we need only Seurat and ggplot2 packages:
+
+```{r libraries, message = FALSE}
+library(Seurat)
+library(ggplot2)
+
+set.seed(42)
+```
+---
+class: inverse, middle
+
+#How this presentation works?
+- This presentation is generated from .Rmd file which you can also find the repository.
+- The presentation visualizes the output of the code chunks that `CP1_from_counts_to_clusters.R` contains.
+- We will go through the code one by line together. 
 
 ---
 # Step 1. Data loading into R
