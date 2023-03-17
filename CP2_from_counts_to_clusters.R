@@ -13,12 +13,17 @@ set.seed(42)
 #Step 1. Getting data into R
 # load the data for GSM5097888 experiment. Or take it here: https://drive.google.com/drive/folders/1tkcZoZwSmunHVbSHgNEwQcWKOERQ7anI?usp=share_link 
 #change the path to the data folder below
-path <- 'E:/R_images/Leaf_LopezAnido_DevCell/Data/GSM5097888_Leaf-HVYNNBBXX/filtered_gene_bc_matrices/Arabidopsis/'
-leaf.data<-Read10X(path, gene.column = 1)
-dim(leaf.data)
+#path <- 'E:/R_images/Leaf_LopezAnido_DevCell/Data/GSM5097888_Leaf-HVYNNBBXX/filtered_gene_bc_matrices/Arabidopsis/'
+#This is the version shown on presentation:
+#path <- 'Data/GSM5097888/' 
+#This is a light version (if you laptop has < 16 Gb RAM):
+path <- 'Data/GSM5097889/' 
+
+leaf.counts<-Read10X(path, gene.column = 1)
+dim(leaf.counts)
 
 #Step 2. Making Seurat object
-leaf.dataset <- CreateSeuratObject(counts = leaf.data, project = "leaf")
+leaf.dataset <- CreateSeuratObject(counts = leaf.counts, project = "leaf")
 
 head(leaf.dataset)
 dim(leaf.dataset)
@@ -31,7 +36,7 @@ leaf.dataset[["percent.ct"]] <- PercentageFeatureSet(leaf.dataset, pattern = "^A
 
 VlnPlot(object = leaf.dataset, features = c("nFeature_RNA", "nCount_RNA","percent.ct","percent.mt"), ncol = 5)
 
-leaf.dataset <- subset(leaf.dataset, subset = percent.mt <= 20 & percent.ct <= 20 & nCount_RNA >=1000)
+leaf.dataset <- subset(leaf.dataset, subset = percent.mt <= 20 & percent.ct <= 20 & nCount_RNA >=500)
 dim(leaf.dataset)
 
 #Step 3. Data normalization 
@@ -55,9 +60,9 @@ leaf.dataset <- readRDS('Data/leaf.dataset.rds')
 
 #Step 6. Gene expression vizualization
 
-FeaturePlot(leaf.dataset,features = 'AT1G77990')
+FeaturePlot(leaf.dataset,features = 'AT1G11850')
             
-FeaturePlot(leaf.dataset,features = 'AT1G77990',order = T, label = T, pt.size = 3) + scale_color_gradientn(colors = c('lightgray','yellow','red','darkred'))
+FeaturePlot(leaf.dataset,features = 'AT1G11850',order = T, label = T, pt.size = 3) + scale_color_gradientn(colors = c('lightgray','yellow','red','darkred'))
 
 FeaturePlot(leaf.dataset,features = c('AT1G12480', 'AT1G11850', 'AT2G05100', 'AT5G38410'), order = T, label = F,pt.size = 3)
 
