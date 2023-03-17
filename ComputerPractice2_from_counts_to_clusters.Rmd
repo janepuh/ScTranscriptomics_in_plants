@@ -56,31 +56,41 @@ knitr::include_graphics("Figures/ScLeaf.jpg")
 ---
 #Step 0. Data download
 
-The data is stored on GEO database: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE167135
-We will use only the sample GSM509788 (ATML1p 10X Genomics pool 1). </br>
+The data is stored on GEO database: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE167135</br>
+There are four datasets generated using 10xGenomics:
+- *GSM509788 (ATML1p 10X Genomics pool 1)*.
+- *GSM509789 (TMMp 10X Genomics replica 1)*,
+- GSM509790 (TMMp 10X Genomics replica 2),
+- GSM509791 (TMMp 10X Genomics replica 3).
+
+--
+
+This presentation uses GSM509788 (high quality data). </br>
+We suggest you to use GSM509789 (lower quality data, smaller size). </br>
 
 You can start from the scratch, downloading *.tar* archive yourself and finding the data matrix there.</br>
-Or you can use the data we already downloaded [via this link](https://drive.google.com/drive/folders/11hHUQ3nabTj230urqKnTXPCwoqWhZ8Zc?usp=sharing).
+Or you can use the data we already downloaded and stored for you in [GitHub ](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants) repository `Data/GSM509789/`.
 
 ---
-#Step 0. Course material download
+class: inverse, middle
 
-Preparatory steps:
-1. You need to clone/download [GitHub repo](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants) with all the course materials (including this lecture).
-2.  Inside the resulting folder, create a folder `Data/GSM5097888` and save the counts data in there.
-3. open `ScTranscriptomics_inPlants.Rproj ` project </br>
-
+#How this presentation works?
+- All the course materials are uploaded to [GitHub](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants).
+- You need to create a new project cloning the [GitHub](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants) repository. Or download the repository with all the course materials (including this tutorial) and open *ScTranscriptomics_inPlants.Rproj* project from there. </br>
+- This presentation is generated from .Rmd file which you can also find in the repository.
+- The presentation visualizes the output of the code chunks that *CP2_from_counts_to_clusters.R* contains.
+- We will go through the code line-by-line together. 
 
 ---
 #Step 0. Preparatory: install packages
 
 First we will need to install packages and load the libraries into your environment. </br>
 
-1. You can use the file `_packages.R` to install all the packages needed in a course.</br>
+1. Use the file `_packages.R` to install the packages needed in a course.</br>
 
-2. open the script `CP1_from_counts_to_clusters.R` for today's practice.
+2. open the script `CP2_from_counts_to_clusters.R` for today's practice.
 
-3. Load the libraries using the script. Today we need only Seurat and ggplot2 packages:
+3. Load the libraries using the script. Today we need only Seurat and tidyverse packages:
 
 ```{r libraries, message = FALSE}
 library(Seurat)
@@ -88,46 +98,40 @@ library(tidyverse)
 
 set.seed(42)
 ```
----
-class: inverse, middle
-
-#How this presentation works?
-- This presentation is generated from .Rmd file which you can also find in the repository.
-- The presentation visualizes the output of the code chunks that *CP1_from_counts_to_clusters.R* contains.
-- We will go through the code line-by-line together. 
 
 ---
 # Step 1. Data loading into R
 
 With 10xGenomics datasets you can use `Read10x` function to load the data.
 
-```{r pressure}
-#add the path to the folder with the matrix here:
+```{r data loading}
 path <- "Data/GSM5097888"
-leaf.data<-Read10X(path, gene.column = 1)
+leaf.counts<-Read10X(path, gene.column = 1)
 ```
+
+--
+
+In your case the path will be different.
 
 --
 ```{r raw matrix}
-head(leaf.data)
-dim(leaf.data)
+dim(leaf.counts)
+head(leaf.counts)
 ```
-
---
-There are 31110 genes and 5021 cells in the dataset
 
 ---
 # Step 2.0. Making Seurat object
 
 ```{r seurat object}
-leaf.dataset <- CreateSeuratObject(counts = leaf.data, project = "leaf")
+leaf.dataset <- CreateSeuratObject(counts = leaf.counts, project = "leaf")
 ```
 --
 ```{r in seurat object}
 head(leaf.dataset)
 dim(leaf.dataset)
 ```
-this will require to elaborate on more
+--
+How many cells there are in your case?
 ---
 # Step 2.1. Testing the dataset quaility
 
@@ -147,7 +151,7 @@ The `[[ ]]` operator can add columns to the object metadata.
 Check the Seurat object meta.data: we've got additional variable percent.mt and percent.ct in there calculated for all the cells.
 ]
 .pull-right[
-```{r volcano}
+```{r violine, fig.height= 6.5}
 VlnPlot(object = leaf.dataset, features = c("nFeature_RNA", "nCount_RNA","percent.ct","percent.mt"), ncol = 5)
 ```
 ]
@@ -156,16 +160,17 @@ VlnPlot(object = leaf.dataset, features = c("nFeature_RNA", "nCount_RNA","percen
 
 ```{r filter cells}
 dim(leaf.dataset)
-leaf.dataset <- subset(leaf.dataset, subset = percent.mt <= 20 & percent.ct <= 20 & nCount_RNA >=1000)
+leaf.dataset <- subset(leaf.dataset, subset = percent.mt <= 20 & percent.ct <= 20 & nCount_RNA >=500)
 dim(leaf.dataset)
 ```
 
-Only one cell was filtered out, this is because the dataset has been already cleaned by the authors.
+Only one cell was filtered out, this is because the dataset has been already cleaned by the authors.</br>
+--
+What about you?
 ---
 #Step 3. Data normalization 
 
 Transformed data will be available in the SCT assay, which is set as the default after running sctransform.
-During normalization, we can also remove confounding sources of variation, for example, mitochondrial mapping percentage
 
 ```{r sctTransfrom, eval = FALSE}
 leaf.dataset <- SCTransform(leaf.dataset)
@@ -315,8 +320,8 @@ DimPlot(leaf.dataset, label = TRUE, pt.size = 1.5, label.size = 10) + NoLegend()
 class: middle, inverse
 #Your turn:
 
-- Explore gene expression for other known marker genes in Arabidopsis leaf (find them using google).
+- Explore gene expression patterns for your dataset.
 
-- Name other clusters in the dataset.
+- Name a few clusters in your dataset.
 
 
