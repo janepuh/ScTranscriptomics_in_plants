@@ -5,10 +5,9 @@
 #Use _packages.R to install all the necessary packages prior loading the libraries
 
 library(Seurat)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-set.seed(100)
+library(tidyverse)
+
+set.seed(42)
 
 #Loading the leaf data set
 leaf.dataset<-readRDS('Data/leaf.dataset.rds')

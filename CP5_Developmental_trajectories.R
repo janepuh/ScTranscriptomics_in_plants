@@ -5,14 +5,12 @@
 #Use _packages.R to install all the necessary packages prior loading the libraries
 
 library(Seurat)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
+library(tidyverse)
 library(patchwork)
 library(monocle3)
 library(SeuratWrappers)
 library(SeuratData)
-set.seed(100)
+set.seed(42)
 
 leaf.dataset<-readRDS('Data/leaf.dataset.rds')
 

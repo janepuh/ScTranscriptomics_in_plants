@@ -1,6 +1,6 @@
 ---
 title: "scTrancriptomics in plants"
-subtitle: "Tutorial 3"
+subtitle: "Tutorial 4"
 ## date: "24/04/2023"
 
 output:
@@ -42,9 +42,7 @@ The course materials can be found via [GitHub](https://github.com/VictoriaVMiron
 
 ```{r libraries,  echo = FALSE}
 library(Seurat)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
+library(tidyverse)
 
 ```
 ---

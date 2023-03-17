@@ -5,13 +5,10 @@
 #Use _packages.R to install all the necessary packages prior loading the libraries
 
 library(Seurat)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(dittoSeq)
+library(tidyverse)
 
 #To make your data calculation reproducible between independent runs, set the seed for the random Number generator
-set.seed(100)
+set.seed(42)
 
 #Task 1: Adjusting the number of clusters
 #lets repeat the dataset preprocessing from the beginning

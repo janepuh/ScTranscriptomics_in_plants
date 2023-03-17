@@ -3,16 +3,16 @@
   <head>
     <title>scTrancriptomics in plants</title>
     <meta charset="utf-8" />
-    <script src="ComputerPractice1_files/header-attrs-2.20/header-attrs.js"></script>
-    <link href="ComputerPractice1_files/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="ComputerPractice1_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
-    <link href="ComputerPractice1_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="ComputerPractice2_from_counts_to_clusters_files/header-attrs-2.20/header-attrs.js"></script>
+    <link href="ComputerPractice2_from_counts_to_clusters_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="ComputerPractice2_from_counts_to_clusters_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="ComputerPractice2_from_counts_to_clusters_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
   </head>
   <body>
     <textarea id="source">
 
 class: left, middle
-####Computer Practice 1
+####Computer Practice 2
 
 ##Single cell Transcriptomics using R
 ##Seurat: from counts to clusters
@@ -81,7 +81,7 @@ First we will need to install packages and load the libraries into your environm
 
 ```r
 library(Seurat)
-library(ggplot2)
+library(tidyverse)
 
 set.seed(42)
 ```
@@ -1177,7 +1177,7 @@ this will require to elaborate on more
 FeatureScatter(leaf.dataset, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/featurescatter-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/featurescatter-1.png" width="504" /&gt;
 
 ---
 #Step 2.1. Testing the dataset quaility
@@ -1197,7 +1197,7 @@ Check the Seurat object meta.data: we've got additional variable percent.mt and 
 VlnPlot(object = leaf.dataset, features = c("nFeature_RNA", "nCount_RNA","percent.ct","percent.mt"), ncol = 5)
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/volcano-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/volcano-1.png" width="504" /&gt;
 ]
 ---
 #Step 2.2. Filter out bad quality cells
@@ -1290,7 +1290,7 @@ prop.table(table(Idents(leaf.dataset)))
 DimPlot(leaf.dataset, label = TRUE)
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/DimPLot 1-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/DimPLot 1-1.png" width="504" /&gt;
 ]
 .pull-right[
 
@@ -1298,7 +1298,7 @@ DimPlot(leaf.dataset, label = TRUE)
 DimPlot(leaf.dataset, label = TRUE, pt.size = 1.5, label.size = 10) + NoLegend()
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/DimPlot2-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/DimPlot2-1.png" width="504" /&gt;
 ]
 ---
 #Step 5. Saving the Seurat object
@@ -1325,7 +1325,7 @@ FeaturePlot visualizes the features stored in Seurat object. It is ggplot2 objec
 FeaturePlot(leaf.dataset,features = 'AT1G77990')
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/FeaturePlot standard-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/FeaturePlot standard-1.png" width="504" /&gt;
 ]
 .pull-right[
 
@@ -1333,7 +1333,7 @@ FeaturePlot(leaf.dataset,features = 'AT1G77990')
 FeaturePlot(leaf.dataset,features = 'AT1G77990',order = T, label = T,pt.size = 3)+scale_color_gradientn(colors = c('lightgray','yellow','red','darkred'))
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/featureplot adj-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/featureplot adj-1.png" width="504" /&gt;
 ]
 ---
 #Step 6. Gene expression vizualization
@@ -1343,7 +1343,7 @@ You can build FeaturePlot it for a number of genes at a time
 FeaturePlot(leaf.dataset,features = c('AT1G12480', 'AT1G11850', 'AT2G05100', 'AT5G38410'),order = T,label = F,pt.size = 3)
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/featureplot combined-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/featureplot combined-1.png" width="504" /&gt;
 ---
 #Step 6. Gene expression vizualization 
 
@@ -1354,7 +1354,7 @@ marker_genes&lt;- c('AT2G05100', 'AT5G01530', 'AT4G10340', 'AT1G67090', 'AT5G384
 DoHeatmap(leaf.dataset, features = marker_genes) + NoLegend()
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/doHeatmap-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/doHeatmap-1.png" width="504" /&gt;
 
 ---
 #Step 7. Clusters annotation by an expert
@@ -1365,7 +1365,7 @@ DoHeatmap(leaf.dataset, features = marker_genes) + NoLegend()
 DimPlot(leaf.dataset, label = TRUE, pt.size = 1.5, label.size = 10) + NoLegend()
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/DimPLot 3-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/DimPLot 3-1.png" width="504" /&gt;
 ]
 .pull-right[
 
@@ -1373,7 +1373,7 @@ DimPlot(leaf.dataset, label = TRUE, pt.size = 1.5, label.size = 10) + NoLegend()
 DoHeatmap(leaf.dataset, features = marker_genes) + NoLegend()
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/featureplot1-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/featureplot1-1.png" width="504" /&gt;
 ]
 ---
 #Step 7. Clusters annotation by an expert
@@ -1383,7 +1383,7 @@ DoHeatmap(leaf.dataset, features = marker_genes) + NoLegend()
 DoHeatmap(leaf.dataset, features = marker_genes) + NoLegend()
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/DoHetamap clust-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/DoHetamap clust-1.png" width="504" /&gt;
 ]
 .pull-right[
 - AT2G05100 is LHCB2, LIGHT-HARVESTING CHLOROPHYLL B-BINDING 2
@@ -1416,7 +1416,7 @@ leaf.dataset$CellTypes&lt;-Idents(leaf.dataset)
 DimPlot(leaf.dataset, label = TRUE, pt.size = 1.5, label.size = 10) + NoLegend()
 ```
 
-&lt;img src="ComputerPractice1_files/figure-html/DimPLot 4-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice2_from_counts_to_clusters_files/figure-html/DimPLot 4-1.png" width="504" /&gt;
 ]
 .pull-right[
 

@@ -3,16 +3,16 @@
   <head>
     <title>scTrancriptomics in plants</title>
     <meta charset="utf-8" />
-    <script src="ComputerPractice2_from_clusters_to_genes_files/header-attrs-2.19/header-attrs.js"></script>
-    <link href="ComputerPractice2_from_clusters_to_genes_files/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="ComputerPractice2_from_clusters_to_genes_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
-    <link href="ComputerPractice2_from_clusters_to_genes_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="ComputerPractice3_from_clusters_to_genes_files/header-attrs-2.20/header-attrs.js"></script>
+    <link href="ComputerPractice3_from_clusters_to_genes_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="ComputerPractice3_from_clusters_to_genes_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="ComputerPractice3_from_clusters_to_genes_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
   </head>
   <body>
     <textarea id="source">
 
 class: left, middle
-####Computer Practice 2
+####Computer Practice 3
 
 ##Single cell Transcriptomics using R
 ##Seurat: from clusters to marker genes
@@ -30,7 +30,8 @@ class: middle, inverse
 - C1. From reads to counts
 - C2. From counts to clusters
 - *C3. From clusters to marker genes*
-- C4. Developmental trajectories, developmental states.
+- C4. Subsetting and integrating the data.
+- C5. Developmental trajectories, developmental states.
 
 The course materials can be found via [GitHub](https://github.com/VictoriaVMironova/ScTranscriptomics_in_plants)
 
@@ -46,7 +47,7 @@ The course materials can be found via [GitHub](https://github.com/VictoriaVMiron
 DimPlot(leaf.dataset, label = TRUE, pt.size = 1.5, label.size = 10) + NoLegend()
 ```
 
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/DimPLot-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/DimPLot-1.png" width="504" /&gt;
 ]
 .pull-right[
 
@@ -54,14 +55,14 @@ DimPlot(leaf.dataset, label = TRUE, pt.size = 1.5, label.size = 10) + NoLegend()
 DoHeatmap(leaf.dataset, features = marker_genes) + NoLegend()
 ```
 
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/featureplot1-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/featureplot1-1.png" width="504" /&gt;
 ]
 ---
 #The issue we faced
 It often happens that we cannot annotate all the clusters
 
 .pull-left[
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/DimPLot1-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/DimPLot1-1.png" width="504" /&gt;
 ]
 .pull-right[
 &lt;div class="figure"&gt;
@@ -106,7 +107,7 @@ DimPlot(leaf.dataset_res1,
 ```
 ]
 .pull-right[
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/clusters adjust res 1 out-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/clusters adjust res 1 out-1.png" width="504" /&gt;
 ]
 ---
 #Making less clusters: resolution 0.2
@@ -124,7 +125,7 @@ DimPlot(leaf.dataset_res0.2,
 ```
 ]
 .pull-right[
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/clusters adjust res 0.2 out-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/clusters adjust res 0.2 out-1.png" width="504" /&gt;
 ]
 ---
 #Making more clusters: resolution 1.5
@@ -142,7 +143,7 @@ DimPlot(leaf.dataset_res1.5,
 ```
 ]
 .pull-right[
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/clusters adjust res 1.5 out-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/clusters adjust res 1.5 out-1.png" width="504" /&gt;
 ]
 ---
 class: middle, inverse
@@ -208,7 +209,7 @@ DoHeatmap(leaf.dataset_res0.2,
 ```
 ]
 .pull-right[
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/top2 markers heatmap out-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/top2 markers heatmap out-1.png" width="504" /&gt;
 ]
 ---
 #Vizualizing the markers: violine plot
@@ -218,7 +219,7 @@ DoHeatmap(leaf.dataset_res0.2,
 VlnPlot(leaf.dataset_res0.2, features = top2$gene, pt.size = 0.2, ncol = 7)
 ```
 
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/Vln for markers-1.png" width="1152" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/Vln for markers-1.png" width="1152" /&gt;
 
 ---
 #Vizualizing the markers: dot plot
@@ -228,7 +229,7 @@ DotPlot(leaf.dataset_res0.2, features = top2$gene, cols = c("blue", "red"), dot.
     RotatedAxis()
 ```
 
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/doc plot-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/doc plot-1.png" width="504" /&gt;
 
 ---
 class: middle, inverse
@@ -238,7 +239,7 @@ class: middle, inverse
 #What is different between two close clusters?
 
 .pull-left[
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/clusters adjust res 1 out2-1.png" width="504" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/clusters adjust res 1 out2-1.png" width="504" /&gt;
 ]
 
 .pull-right[
@@ -288,7 +289,7 @@ top10 &lt;- cluster2.markers %&gt;% slice_max(n = 10, order_by = avg_log2FC) %&g
 VlnPlot(leaf.dataset_res1, features = top10, pt.size = 0.2, ncol = 5)
 ```
 
-&lt;img src="ComputerPractice2_from_clusters_to_genes_files/figure-html/Vln for markers 2 clusters-1.png" width="1152" /&gt;
+&lt;img src="ComputerPractice3_from_clusters_to_genes_files/figure-html/Vln for markers 2 clusters-1.png" width="1152" /&gt;
 The data suggests that there is no any specifically expressed gene between two clusters, they all express in both cell populations, but with different expression levels. 
 ---
 #Other solutions for markers genes
@@ -315,7 +316,7 @@ class: middle, inverse
 
 - Make a new seurat object with the FindClusters resolution = 0.1
 - Make a list of TOP5 marker genes 
-- Build a heatmap, and violine plot for TOP5 marker genes
+- Build a heatmap, dotplot, and violine plot for TOP5 marker genes
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

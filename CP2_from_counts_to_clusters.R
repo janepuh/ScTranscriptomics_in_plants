@@ -5,10 +5,7 @@
 #Use _packages.R to install all the necessary packages prior loading the libraries
 
 library(Seurat)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-
+library(tidyverse)
 
 #To make your data calculation reproducible between independent runs, set the seed for the random Number generator
 set.seed(42)
