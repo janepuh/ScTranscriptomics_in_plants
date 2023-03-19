@@ -9,7 +9,7 @@ devtools::install_github('cole-trapnell-lab/monocle3')
 
 #install the dependencies for Seurat Wrapper
 my_packages_2<- c("R.utils", "spatstat.explore", "spatstat.random")
-install.packages(my_packages2)
+install.packages(my_packages_2)
 
 devtools::install_github('satijalab/seurat-data')
 devtools::install_github("satijalab/seurat-wrappers")
