@@ -12,7 +12,7 @@ set.seed(42)
 
 #Task 1: Adjusting the number of clusters
 #lets repeat the dataset preprocessing from the beginning
-path <- 'E:/R_images/Leaf_LopezAnido_DevCell/Data/GSM5097888_Leaf-HVYNNBBXX/filtered_gene_bc_matrices/Arabidopsis/'
+path <- 'E:/R_images/Leaf_LopezAnido_DevCell/Data/GSM5097888_Leaf-HVYNNBBXX/filtered_gene_bc_matrices/Arabidopsis/' # Are these data in the project folder? Make it a part of the project
 leaf.dataset<-Read10X(path, gene.column = 1)
 leaf.dataset <- CreateSeuratObject(counts = leaf.dataset, project = "leaf")
 leaf.dataset[["percent.mt"]] <- PercentageFeatureSet(leaf.dataset, pattern = "^ATM")
